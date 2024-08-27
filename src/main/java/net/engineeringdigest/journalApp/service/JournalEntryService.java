@@ -1,6 +1,7 @@
 package net.engineeringdigest.journalApp.service;
 
 import net.engineeringdigest.journalApp.entity.JournalEntry;
+import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.repository.JournalEntryRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,14 +20,27 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
+    @Autowired
+    private UserService userService;
+
+    public void saveEntry(JournalEntry journalEntry, String userName){
+        try{
+            User user= userService.findByUserName(userName);
+            journalEntry.setDate(LocalDateTime.now());
+            JournalEntry saved = journalEntryRepository.save(journalEntry);
+            user.getJournalEntries().add(saved);
+            userService.saveEntry(user);
+        }catch (Exception e){
+            log.error("Exception ",e);
+        }
+    }
+
     public void saveEntry(JournalEntry journalEntry){
         try{
-            journalEntry.setDate(LocalDateTime.now());
             journalEntryRepository.save(journalEntry);
         }catch (Exception e){
             log.error("Exception ",e);
         }
-
     }
 
     public List<JournalEntry> getAll(){
