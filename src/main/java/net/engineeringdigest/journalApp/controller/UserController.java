@@ -2,6 +2,7 @@ package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.entity.User;
+import net.engineeringdigest.journalApp.repository.UserRepository;
 import net.engineeringdigest.journalApp.service.JournalEntryService;
 import net.engineeringdigest.journalApp.service.UserService;
 import org.bson.types.ObjectId;
@@ -21,6 +22,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserRepository userRepository;
 
 
     @PutMapping
@@ -36,4 +39,12 @@ public class UserController {
 
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping
+    public  ResponseEntity<?> deleteUserById(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        userRepository.deleteByUserName(authentication.getName());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
